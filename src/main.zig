@@ -2,19 +2,12 @@ const std = @import("std");
 const stdout = std.debug.print;
 
 pub fn main() !void {
-    stdout("Score: {d} \n", .{add(1, 2)});
-    stdout("2 is odd {} \n", .{isOdd(2)});
-    stdout("2 is even {} \n", .{isEven(2)});
+    const prices = [_]f32{ 5.50, 2.30, 1.90 };
+    stdout("Total price {} \n", .{total(&prices)}); // <- pass pointer ref
 }
 
-fn add(a: i32, b: i32) i32 {
-    return a + b;
-}
-
-fn isOdd(n: u32) bool {
-    return n % 2 == 0;
-}
-
-fn isEven(n: u32) bool {
-    return !isOdd(n);
+fn total(xs: []const f32) f32 {
+    var output: f32 = 0;
+    for (xs) |x| output += x;
+    return output;
 }
