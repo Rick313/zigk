@@ -2,15 +2,21 @@ const std = @import("std");
 const stdout = std.debug.print;
 
 pub fn main() !void {
-    const john = User{ .first_name = "John", .last_name = "Doe" };
-    try john.greeting();
+    var john = Hero{ .name = "John", .life_pt = 10, .attack_pt = 2 };
+    var bob = Hero{ .name = "Bob", .life_pt = 12, .attack_pt = 1 };
+    john.attack(&bob);
+    try bob.showLife();
 }
 
-const User = struct {
-    first_name: []const u8,
-    last_name: []const u8,
-
-    pub fn greeting(self: User) !void {
-        stdout("Hello {s} {s} !\n", .{ self.first_name, self.last_name });
+const Hero = struct {
+    name: []const u8,
+    life_pt: u32,
+    attack_pt: u32,
+    pub fn attack(self: Hero, target: *Hero) void {
+        stdout("[{s}] Attack {s} ! \n", .{ self.name, target.name });
+        target.life_pt -= self.attack_pt;
+    }
+    pub fn showLife(self: Hero) !void {
+        stdout("[{s}] My life point is {d}. \n", .{ self.name, self.life_pt });
     }
 };
