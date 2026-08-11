@@ -1,22 +1,32 @@
 const std = @import("std");
-const DateTime = @import("datetime.zig").DateTime;
 
 pub fn main(init: std.process.Init) !void {
-    var datetime: DateTime = .now(init.io);
-    datetime = datetime.add(.day, 2);
-    datetime = datetime.add(.month, 5);
-    const component = datetime.component();
-    std.debug.print("{d}\n", .{datetime.timestamp.toSeconds()});
-    std.debug.print("{d}-{d}-{d} {d}:{d}:{d}\n", .{
-        component.year,
-        component.month,
-        component.day,
-        component.hour,
-        component.minute,
-        component.second,
-    });
-    const timestamp = component.timestamp();
-    std.debug.print("{d}\n", .{timestamp.toSeconds()});
-    std.debug.print("{s}\n", .{datetime.iso_date()});
-    std.debug.print("{s}\n", .{datetime.iso_datetime()});
+    try print(init.io, "Input : ", .{});
+    var line = try readline(init.io);
+    line = try init.gpa.dupe(u8, line);
+    defer init.gpa.free(line);
+    try println(init.io, "Hello {s}", .{line});
+
+    const arr = [_]u8{ 1, 2, 3 };
+    try println(init.io, "{any}", .{arr ** 2});
+}
+
+/// Read input limited to 1mio
+pub fn readline(io: std.Io) ![]u8 {
+    var buffer: [1024 * 1024]u8 = undefined;
+    var stdin: std.Io.File.Reader = .init(.stdin(), io, &buffer);
+    return try stdin.interface.takeDelimiterExclusive('\n');
+}
+
+/// Write line limited to 1204ko
+pub fn print(io: std.Io, comptime fmt: []const u8, args: anytype) !void {
+    var buffer: [1024]u8 = undefined;
+    var stdout: std.Io.File.Writer = .init(.stdout(), io, &buffer);
+    try stdout.interface.print(fmt, args);
+    try stdout.interface.flush();
+}
+
+/// Write line and break limited to 1204ko
+pub fn println(io: std.Io, comptime fmt: []const u8, args: anytype) !void {
+    try print(io, fmt ++ "\n", args);
 }
